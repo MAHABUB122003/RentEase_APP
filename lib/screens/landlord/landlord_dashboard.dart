@@ -8,6 +8,7 @@ import 'package:rentease_simple/providers/theme_provider.dart';
 import 'package:rentease_simple/screens/landlord/view_tenants_screen.dart';
 import 'package:rentease_simple/screens/landlord/properties_screen.dart';
 import 'package:rentease_simple/screens/landlord/reports_screen.dart';
+import 'package:rentease_simple/screens/messages/conversations_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:rentease_simple/widgets/custom_button.dart';
 
@@ -185,6 +186,18 @@ class _LandlordHomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ViewTenantsScreen()),
+                  );
+                },
+              ),
+              _buildActionCard(
+                title: 'Messages',
+                icon: Icons.message,
+                color: Colors.teal,
+                onTap: () {
+                  final auth = Provider.of<AuthProvider>(context, listen: false);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => ConversationsScreen(userId: auth.currentUser!.id, title: 'Messages')),
                   );
                 },
               ),

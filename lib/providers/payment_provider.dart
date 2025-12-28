@@ -5,12 +5,14 @@ import 'package:rentease_simple/models/user.dart';
 class PaymentProvider with ChangeNotifier {
   List<Bill> _bills = [];
   List<Map<String, dynamic>> _payments = [];
+  List<Map<String, dynamic>> _messages = [];
   List<Map<String, dynamic>> _tenants = [];
   List<Map<String, dynamic>> _properties = [];
   bool _isLoading = false;
 
   List<Bill> get bills => _bills;
   List<Map<String, dynamic>> get payments => _payments;
+  List<Map<String, dynamic>> get messages => _messages;
   bool get isLoading => _isLoading;
 
   PaymentProvider() {
@@ -191,6 +193,58 @@ class PaymentProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
     return true;
+  }
+
+  // Messaging helpers
+  /// Send a message between users (senderId, receiverId are user ids)
+  void sendMessage(String senderId, String receiverId, String text) {
+    final msg = {
+      'id': 'msg_${DateTime.now().millisecondsSinceEpoch}',
+      'senderId': senderId,
+      'receiverId': receiverId,
+      'text': text,
+      'date': DateTime.now(),
+    };
+    _messages.insert(0, msg);
+    notifyListeners();
+  }
+
+  /// Get messages between two users ordered oldest first
+  List<Map<String, dynamic>> getMessagesBetween(String aId, String bId) {
+    final list = _messages.where((m) {
+      final s = m['senderId'] as String? ?? '';
+      final r = m['receiverId'] as String? ?? '';
+      return (s == aId && r == bId) || (s == bId && r == aId);
+    }).toList();
+    // sort ascending by date (oldest first)
+    list.sort((x, y) {
+      final dx = x['date'] as DateTime? ?? DateTime.now();
+      final dy = y['date'] as DateTime? ?? DateTime.now();
+      return dx.compareTo(dy);
+    });
+    return list;
+  }
+
+  /// Get conversation partners for a user with last message
+  List<Map<String, dynamic>> getConversationsFor(String userId) {
+    final partners = <String, Map<String, dynamic>>{};
+    for (final m in _messages) {
+      final s = m['senderId'] as String? ?? '';
+      final r = m['receiverId'] as String? ?? '';
+      final other = s == userId ? r : (r == userId ? s : null);
+      if (other == null) continue;
+      if (!partners.containsKey(other)) {
+        partners[other] = m;
+      }
+    }
+    final list = partners.entries.map((e) => {'partnerId': e.key, 'lastMessage': e.value}).toList();
+    // sort by last message date descending (most recent first)
+    list.sort((a, b) {
+      final da = (a['lastMessage'] as Map<String, dynamic>)['date'] as DateTime? ?? DateTime.now();
+      final db = (b['lastMessage'] as Map<String, dynamic>)['date'] as DateTime? ?? DateTime.now();
+      return db.compareTo(da);
+    });
+    return list;
   }
 
   Map<String, dynamic> generateReport() {

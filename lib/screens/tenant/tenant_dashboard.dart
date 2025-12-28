@@ -6,7 +6,8 @@ import 'package:rentease_simple/providers/theme_provider.dart';
 import 'package:rentease_simple/providers/payment_provider.dart';
 import 'package:rentease_simple/screens/tenant/payment_screen.dart';
 import 'package:rentease_simple/screens/tenant/history_screen.dart';
-import 'package:rentease_simple/screens/tenant/contact_screen.dart';
+// contact_screen removed in favor of landlord profile / messaging
+import 'package:rentease_simple/screens/tenant/tenant_landlord_profile.dart';
 import 'package:rentease_simple/screens/tenant/help_screen.dart';
 import 'package:rentease_simple/screens/auth/login_screen.dart';
 import 'package:rentease_simple/utils/format.dart';
@@ -130,13 +131,13 @@ class _TenantDashboardState extends State<TenantDashboard> {
                     },
                   ),
                   _buildActionCard(
-                    title: 'Contact',
-                    icon: Icons.message,
+                    title: 'Landlord',
+                    icon: Icons.person_search,
                     color: Colors.purple,
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ContactScreen()),
+                        MaterialPageRoute(builder: (_) => TenantLandlordProfile()),
                       );
                     },
                   ),

@@ -95,7 +95,7 @@ class _SplashScreenState extends State<SplashScreen> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 40),
               child: Text(
-                'Presented by:\nMd. Mahabubur Rahman (223071107)\nBishal Hossain Antor (223071118)',
+                'Professional property & rent management',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12,

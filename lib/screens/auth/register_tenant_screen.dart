@@ -62,27 +62,42 @@ class _RegisterTenantScreenState extends State<RegisterTenantScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Register as Tenant')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              CustomTextField(controller: _nameController, label: 'Full Name', hintText: 'Enter full name', prefixIcon: Icons.person),
-              const SizedBox(height: 12),
-              CustomTextField(controller: _emailController, label: 'Email', hintText: 'Enter email', prefixIcon: Icons.email),
-              const SizedBox(height: 12),
-              CustomTextField(controller: _phoneController, label: 'Phone', hintText: 'Enter phone number', prefixIcon: Icons.phone),
-              const SizedBox(height: 12),
-              CustomTextField(controller: _passwordController, label: 'Password', hintText: 'Enter password', prefixIcon: Icons.lock, obscureText: true),
-              const SizedBox(height: 12),
-              CustomTextField(controller: _codeController, label: 'Invite Code', hintText: 'Enter invite code', prefixIcon: Icons.vpn_key),
-              const SizedBox(height: 20),
-              CustomButton(text: 'Register', onPressed: _register, color: Colors.green),
-              const SizedBox(height: 12),
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Back to Login')),
-            ],
+      backgroundColor: const Color(0xFFF6F8FA),
+      appBar: AppBar(title: const Text('Create Tenant Account')),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Card(
+              elevation: 6,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const Text('Tenant Registration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 14),
+                      CustomTextField(controller: _nameController, label: 'Full Name', hintText: 'Enter full name', prefixIcon: Icons.person),
+                      const SizedBox(height: 12),
+                      CustomTextField(controller: _emailController, label: 'Email', hintText: 'Enter email', prefixIcon: Icons.email),
+                      const SizedBox(height: 12),
+                      CustomTextField(controller: _phoneController, label: 'Phone', hintText: 'Enter phone number', prefixIcon: Icons.phone),
+                      const SizedBox(height: 12),
+                      CustomTextField(controller: _passwordController, label: 'Password', hintText: 'Create a password', prefixIcon: Icons.lock, obscureText: true),
+                      const SizedBox(height: 12),
+                      CustomTextField(controller: _codeController, label: 'Invite Code (optional)', hintText: 'Enter invite code', prefixIcon: Icons.vpn_key),
+                      const SizedBox(height: 20),
+                      SizedBox(width: double.infinity, child: CustomButton(text: 'Register', onPressed: _register, color: Colors.green)),
+                      const SizedBox(height: 12),
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Back to Login')),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ),

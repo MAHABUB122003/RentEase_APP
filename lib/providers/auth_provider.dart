@@ -109,38 +109,52 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    final landlord = _users.firstWhere(
-      (u) => u.inviteCode != null && (u.inviteCode!.toUpperCase() == inviteCode.toUpperCase()),
-      orElse: () => throw Exception('Invalid invite code'),
-    );
+      // allow empty invite code (tenant can register without landlord)
+      String? landlordId;
+      final code = inviteCode.trim();
 
-    if (_users.any((u) => u.email.toLowerCase() == email.toLowerCase())) {
+      if (code.isNotEmpty) {
+        final codeUpper = code.toUpperCase();
+        // try match by inviteCode (case-insensitive) for landlords
+        var matches = _users.where((u) => (u.inviteCode ?? '').toUpperCase() == codeUpper && u.role == 'landlord').toList();
+        // also allow using landlord id directly (user may paste id instead of code)
+        if (matches.isEmpty) {
+          matches = _users.where((u) => u.id == code && u.role == 'landlord').toList();
+        }
+        if (matches.isEmpty) {
+          throw Exception('Invalid invite code');
+        }
+        landlordId = matches.first.id;
+      }
+
+      if (_users.any((u) => u.email.toLowerCase() == email.toLowerCase())) {
+        throw Exception('Email already registered');
+      }
+
+      final id = 'tenant_${DateTime.now().millisecondsSinceEpoch}';
+      final user = User(
+        id: id,
+        name: name,
+        email: email,
+        phone: phone,
+        role: 'tenant',
+        landlordId: landlordId,
+        isVerified: true,
+        password: password,
+        createdAt: DateTime.now(),
+      );
+
+      _users.add(user);
+      await _saveUsers();
+
+      return user;
+    } finally {
       _isLoading = false;
       notifyListeners();
-      throw Exception('Email already registered');
     }
-
-    final id = 'tenant_${DateTime.now().millisecondsSinceEpoch}';
-    final user = User(
-      id: id,
-      name: name,
-      email: email,
-      phone: phone,
-      role: 'tenant',
-      landlordId: landlord.id,
-      isVerified: true,
-      password: password,
-      createdAt: DateTime.now(),
-    );
-
-    _users.add(user);
-    await _saveUsers();
-
-    _isLoading = false;
-    notifyListeners();
-    return user;
   }
 
   Future<String> regenerateInviteCode(String landlordId) async {
@@ -170,18 +184,20 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      await Future.delayed(const Duration(milliseconds: 500));
 
-    final user = _users.firstWhere(
-      (u) => u.email.toLowerCase() == email.toLowerCase() && u.password == password,
-      orElse: () => throw Exception('Invalid credentials'),
-    );
+      final user = _users.firstWhere(
+        (u) => u.email.toLowerCase() == email.toLowerCase() && u.password == password,
+        orElse: () => throw Exception('Invalid credentials'),
+      );
 
-    _currentUser = user;
-    await _saveCurrentUser();
-
-    _isLoading = false;
-    notifyListeners();
+      _currentUser = user;
+      await _saveCurrentUser();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {

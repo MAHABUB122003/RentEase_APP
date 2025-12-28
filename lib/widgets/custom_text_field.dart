@@ -40,12 +40,18 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             hintText: hintText,
-            prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Colors.grey),
+            prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: Colors.grey.shade600) : null,
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.grey.shade300),
             ),
-            contentPadding: const EdgeInsets.all(16),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFF2C3E50), width: 1.6),
+            ),
           ),
         ),
       ],

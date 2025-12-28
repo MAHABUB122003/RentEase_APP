@@ -28,13 +28,24 @@ class MyApp extends StatelessWidget {
           title: 'RentEase - Simple Version',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primaryColor: const Color(0xFF2C3E50),
+            colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2C3E50)),
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xFF2C3E50),
               foregroundColor: Colors.white,
-              elevation: 0,
+              elevation: 1,
+              centerTitle: true,
             ),
-            scaffoldBackgroundColor: const Color(0xFFF5F7FA),
+            cardTheme: CardThemeData(
+              color: Colors.white,
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+              selectedItemColor: Color(0xFF2C3E50),
+              unselectedItemColor: Colors.grey,
+            ),
+            scaffoldBackgroundColor: const Color(0xFFF6F8FA),
           ),
           darkTheme: ThemeData.dark(),
           themeMode: theme.isDark ? ThemeMode.dark : ThemeMode.light,
