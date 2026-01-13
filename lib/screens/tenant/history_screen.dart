@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rentease_simple/providers/payment_provider.dart';
+import 'package:rentease_simple/providers/auth_provider.dart';
 import 'package:rentease_simple/models/bill.dart';
 import 'package:rentease_simple/utils/format.dart';
 
@@ -10,8 +11,12 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final paymentProvider = Provider.of<PaymentProvider>(context);
-    final bills = paymentProvider.bills;
-    final payments = paymentProvider.payments;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final currentTenantId = authProvider.currentUser?.id;
+    
+    // Filter bills and payments for current tenant only
+    final bills = paymentProvider.getBillsForTenantId(currentTenantId ?? '');
+    final payments = paymentProvider.getPaymentsForTenantId(currentTenantId ?? '');
 
     return DefaultTabController(
       length: 2,

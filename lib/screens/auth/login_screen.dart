@@ -36,20 +36,32 @@ class _LoginScreenState extends State<LoginScreen> {
         );
 
         if (authProvider.currentUser != null) {
-          if (authProvider.currentUser!.role == 'tenant') {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const TenantDashboard()),
-            );
-          } else {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const LandlordDashboard()),
+          if (mounted) {
+            if (authProvider.currentUser!.role == 'tenant') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const TenantDashboard()),
+              );
+            } else {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const LandlordDashboard()),
+              );
+            }
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login failed: User not found')),
             );
           }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login failed: ${e.toString()}')),
+          );
+        }
       }
     }
   }

@@ -38,20 +38,44 @@ class _RegisterLandlordScreenState extends State<RegisterLandlordScreen> {
         phone: _phoneController.text.trim(),
       );
 
-      await showDialog<void>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Registration Successful'),
-          content: Text('Invite Code: ${user.inviteCode}\nShare this code with tenants.'),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK')),
-          ],
-        ),
-      );
+      if (mounted) {
+        await showDialog<void>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Registration Successful'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Your landlord account has been created.'),
+                const SizedBox(height: 12),
+                const Text('Invite Code:', style: TextStyle(fontWeight: FontWeight.bold)),
+                SelectableText(user.inviteCode ?? 'N/A',
+                  style: const TextStyle(fontFamily: 'monospace', fontSize: 14),
+                ),
+                const SizedBox(height: 12),
+                const Text('Share this code with your tenants.'),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
 
-      Navigator.pop(context);
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${e.toString()}')),
+        );
+      }
     }
   }
 

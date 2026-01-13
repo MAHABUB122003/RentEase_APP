@@ -47,15 +47,24 @@ class _RegisterTenantScreenState extends State<RegisterTenantScreen> {
       // add tenant record for landlord UI
       payment.addTenantFromUser(user);
 
-      // auto-login
-      await auth.login(email: user.email, password: user.password ?? '');
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const TenantDashboard()),
+      // auto-login with the password we just set
+      await auth.login(
+        email: user.email,
+        password: _passwordController.text.trim(),
       );
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const TenantDashboard()),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed: ${e.toString()}')),
+        );
+      }
     }
   }
 

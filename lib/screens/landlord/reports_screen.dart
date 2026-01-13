@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rentease_simple/providers/payment_provider.dart';
+import 'package:rentease_simple/providers/auth_provider.dart';
 import 'package:rentease_simple/utils/format.dart';
 
 class ReportsScreen extends StatelessWidget {
@@ -9,7 +10,9 @@ class ReportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PaymentProvider>(context);
-    final report = provider.generateReport();
+    final authProvider = Provider.of<AuthProvider>(context);
+    final currentLandlordId = authProvider.currentUser?.id;
+    final report = provider.generateReportForLandlord(currentLandlordId ?? '');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Reports')),

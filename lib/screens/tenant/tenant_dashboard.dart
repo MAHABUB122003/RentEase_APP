@@ -24,8 +24,10 @@ class _TenantDashboardState extends State<TenantDashboard> {
   int _selectedIndex = 0;
 
   Widget _buildHomeScreen(AuthProvider authProvider, PaymentProvider paymentProvider) {
-    final pendingBills = paymentProvider.getPendingBills();
-    final totalPending = paymentProvider.getTotalPendingAmount();
+    // Get ONLY this tenant's bills
+    final currentTenantId = authProvider.currentUser?.id ?? '';
+    final pendingBills = paymentProvider.getPendingBillsForSpecificTenant(currentTenantId);
+    final totalPending = paymentProvider.getTotalPendingAmountForTenant(currentTenantId);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -156,8 +158,9 @@ class _TenantDashboardState extends State<TenantDashboard> {
           ),
           const SizedBox(height: 20),
 
+          // Pending Bills Section
           const Text(
-            'Recent Bills',
+            'Pending Bills',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -165,50 +168,143 @@ class _TenantDashboardState extends State<TenantDashboard> {
           ),
           const SizedBox(height: 10),
           Builder(builder: (context) {
-            final recent = (List<Bill>.from(paymentProvider.bills)..sort((a, b) => b.billDate.compareTo(a.billDate))).take(3).toList();
-            if (recent.isEmpty) {
-              return const Card(
+            // Get only THIS tenant's pending bills
+            final currentTenantId = authProvider.currentUser?.id ?? '';
+            final pendingBillsList = paymentProvider.getPendingBillsForSpecificTenant(currentTenantId);
+            if (pendingBillsList.isEmpty) {
+              return Card(
                 child: Padding(
-                  padding: EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(20),
                   child: Center(
-                    child: Text('No recent bills'),
+                    child: Column(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green, size: 48),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'No Pending Bills',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'All your bills are paid! Great job.',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
             }
 
             return Column(
-              children: recent.map((bill) {
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-                  title: Text('Bill #${bill.id}'),
-                  subtitle: Text('Due: ${AppFormat.formatDate(bill.dueDate)}'),
-                  trailing: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        bill.status.toUpperCase(),
+              children: pendingBillsList.map((bill) {
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(15),
+                    leading: Icon(
+                      Icons.receipt_long,
+                      color: Colors.orange,
+                    ),
+                    title: Text('Bill #${bill.id.substring(0, 8)}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5),
+                        Text('Due: ${AppFormat.formatDate(bill.dueDate)}'),
+                        Text('Amount: ${AppFormat.formatCurrency(bill.totalAmount)}'),
+                      ],
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'PAY NOW',
                         style: TextStyle(
-                          color: bill.status == 'paid' ? Colors.green : Colors.orange,
+                          color: Colors.orange,
                           fontWeight: FontWeight.bold,
+                          fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Text(AppFormat.formatCurrency(bill.totalAmount)),
-                    ],
-                  ),
-                  onTap: () {
-                    if (bill.status == 'pending') {
+                    ),
+                    onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => PaymentScreen(billId: bill.id, amount: bill.totalAmount),
                         ),
                       );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('This bill is already paid.')));
-                    }
-                  },
+                    },
+                  ),
+                );
+              }).toList(),
+            );
+          }),
+
+          const SizedBox(height: 20),
+
+          // Paid Bills Section
+          const Text(
+            'Payment History',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Builder(builder: (context) {
+            // Get only THIS tenant's paid bills
+            final currentTenantId = authProvider.currentUser?.id ?? '';
+            final paidBillsList = paymentProvider.getPaidBillsForSpecificTenant(currentTenantId);
+            if (paidBillsList.isEmpty) {
+              return Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Center(
+                    child: Text('No paid bills yet'),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              children: paidBillsList.map((bill) {
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(15),
+                    leading: Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    title: Text('Bill #${bill.id.substring(0, 8)} - Paid'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5),
+                        Text('Paid on: ${AppFormat.formatDate(bill.paidDate ?? DateTime.now())}'),
+                        Text('Amount: ${AppFormat.formatCurrency(bill.totalAmount)}'),
+                      ],
+                    ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Text(
+                        'PAID',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
                 );
               }).toList(),
             );
