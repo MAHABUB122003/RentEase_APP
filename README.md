@@ -17,7 +17,7 @@ Automate bill creation and tracking
 Improve transparency between landlords and tenants
 
 Provide a scalable and maintainable system
-
+```
 ✨ Features
 Landlord
 
@@ -40,7 +40,7 @@ Track payment status
 View billing history
 
 Communicate with landlord
-
+```
 General
 
 Email/password authentication
@@ -54,7 +54,7 @@ Cross-platform support
 🏗️ Architecture
 
 The project follows Clean Architecture with Provider-based state management.
-
+```text
 lib/
  ├── main.dart
  ├── models/
@@ -73,7 +73,7 @@ lib/
  │    └── common/
  ├── widgets/
  └── utils/
-
+```
 🛠️ Technology Stack
 
 Flutter
@@ -91,8 +91,10 @@ Local Storage (Caching)
 (Clone, Configure & Run)
 
 1️⃣ Clone the Project
+```
 git clone https://github.com/MAHABUB122003/RentEase_APP
 cd RentEase
+```
 
 2️⃣ Verify Flutter Installation
 flutter doctor
@@ -113,7 +115,7 @@ A. Authentication
 Enable email/password authentication
 
 Users register as Landlord or Tenant
-
+```
 B. Database Tables
 users table
 id (uuid, primary key)
@@ -122,7 +124,8 @@ full_name (text)
 phone (text)
 role (text)
 created_at (timestamp)
-
+```
+```
 bills table
 id (uuid, primary key)
 tenant_id (uuid)
@@ -131,7 +134,7 @@ amount (numeric)
 month (text)
 status (text)
 created_at (timestamp)
-
+```
 C. Security
 
 Enable Row Level Security (RLS)
@@ -180,7 +183,7 @@ Register as Tenant
 View Assigned Bills
       ↓
 Check Payment Status
-
+```
 🗄️ Data Model (Conceptual)
 User
 id
@@ -198,7 +201,7 @@ amount
 month
 status
 created_at
-
+```
 🐛 Common Issues
 App Not Running
 flutter clean
@@ -238,8 +241,9 @@ Multi-language support
 📄 License
 
 This project is distributed under the MIT License.
-
+```
 👤 Author
 
 MD Mahabubur Rahman
 Bachelor of Science in Computer Science & Engineering
+```
