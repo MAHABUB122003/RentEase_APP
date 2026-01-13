@@ -91,7 +91,7 @@ Local Storage (Caching)
 (Clone, Configure & Run)
 
 1️⃣ Clone the Project
-git clone https://github.com/your-username/RentEase.git
+git clone https://github.com/MAHABUB122003/RentEase_APP
 cd RentEase
 
 2️⃣ Verify Flutter Installation
